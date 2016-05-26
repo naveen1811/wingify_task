@@ -1,0 +1,51 @@
+from __future__ import unicode_literals
+
+from django.db import models
+
+# Create your models here.
+
+
+class OnlineStore(object):
+	"""
+    Create model for online store
+    """
+    name = models.CharField(max_length=128)
+    address = models.CharField(max_length=500)
+    phone_no = models.CharField(max_length=10)
+    email_id = models.EmailField(max_length=100, null=True, blank=True)
+	user = models.ForeignKey('User')
+	
+
+	def __unicode__(self):
+		return self.name
+
+
+class Products(object):
+	"""
+    Create model for products
+    """
+	name = models.CharField(max_length = 128)
+	sku_id = models.CharField(max_length = 128, db_index = True)
+	quantity = models.IntegerField()
+	store_id = models.ForeignKey('OnlineStore', db_index = True)
+	price = models.IntegerField()
+
+	def __unicode__(self):
+		return self.sku_id
+
+
+@receiver(post_save, sender=User)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    """
+    Post save signal on user to create a token when user is created
+    """
+    if created:
+        Token.objects.create(user=instance)
+    return True
+
+
+
+
+
+
+
